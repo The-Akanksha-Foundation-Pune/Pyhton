@@ -16,7 +16,7 @@ sudo mkdir -p "$APP_DIR"
 
 # Move files to app folder, specify what should be moved
 echo "Moving app files to app folder"
-sudo mv deploy.sh server.py requirements.txt "$APP_DIR"
+sudo mv deploy.sh app.py requirements.txt "$APP_DIR"
 sudo mv env "$APP_DIR/.env"
 
 # Navigate to the app directory
