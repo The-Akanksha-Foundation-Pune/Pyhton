@@ -3,7 +3,7 @@ name: Deploy to EC2 🚀
 on:
   push:
     branches:
-      - "main" # This triggers the workflow on push to any branch
+      - "main" # Triggers the workflow on push to the main branch
 
 jobs:
   deploy:
@@ -17,17 +17,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-
-      - name: Create .env file dynamically 🧨
-        env:
-          ENV: ${{ secrets.ENV }}
-          EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
-          
-        run: |
-          echo "ENV=${ENV}" >> env
-          echo "EC2_USERNAME=${EC2_USERNAME}" >> env
-          
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
       - name: Copy files to remote server 🚙
         env:
@@ -36,12 +26,21 @@ jobs:
         run: |
           scp -r * $EC2_USERNAME@$EC2_HOST:/home/ubuntu/
 
-      - name: Run Bash Script To Delpoy App 🚀
+      - name: Create .env file on EC2 🧨
+        env:
+          ENV: ${{ secrets.ENV }}
+          EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+        run: |
+          ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST "echo 'ENV=${ENV}' > /home/ubuntu/.env"
+          ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST "echo 'EC2_USERNAME=${EC2_USERNAME}' >> /home/ubuntu/.env"
+
+      - name: Run Bash Script to Deploy App 🚀
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
         run: |
-          ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST "chmod +x ./deploy.sh && ./deploy.sh"
+          ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST "chmod +x /home/ubuntu/deploy.sh && /home/ubuntu/deploy.sh"
 
       - name: Clean up SSH key 🚀
         if: always()
