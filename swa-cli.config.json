@@ -1,0 +1,9 @@
+{
+  "$schema": "https://aka.ms/azure/static-web-apps-cli/schema",
+  "configurations": {
+    "pyhton-test-ec2": {
+      "appLocation": "app.py",
+      "outputLocation": "."
+    }
+  }
+}
