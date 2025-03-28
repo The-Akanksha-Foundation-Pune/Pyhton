@@ -27,6 +27,7 @@ sudo python3 -m venv venv
 source venv/bin/activate
 echo “Acrivated ENV”
 sudo chown -R ubuntu:ubuntu /var/www/my-app
+sudo chown -R ubuntu:ubuntu /home/ubuntu/venv
 pip3 install -r requirements.txt
 
 # Install and configure Nginx if it's not installed
