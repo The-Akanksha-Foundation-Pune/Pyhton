@@ -22,7 +22,11 @@ echo "Installing Python and pip"
 sudo apt-get install -y python3 python3-pip
 
 echo "Installing application dependencies"
-sudo pip install -r /var/www/my-app/requirements.txt
+sudo apt-get install python3-venv
+sudo python3 -m venv venv
+source venv/bin/activate
+sudo chown -R ubuntu:ubuntu /var/www/my-app
+pip3 install -r requirements.txt
 
 # Install and configure Nginx if it's not installed
 if ! command -v nginx > /dev/null; then
@@ -36,7 +40,7 @@ if [ ! -f /etc/nginx/sites-available/myapp ]; then
     sudo bash -c 'cat > /etc/nginx/sites-available/myapp <<EOF
 server {
     listen 80;
-    server_name 52.6.210.203;  # Change to your actual server IP
+    server_name 54.224.169.32;  # Change to your actual server IP
 
     location / {
         include proxy_params;
@@ -60,4 +64,5 @@ sudo rm -f /var/www/my-app/myapp.sock
 echo "Starting Gunicorn"
 sudo gunicorn --workers 3 --bind 0.0.0.0:5000 --user www-data --group www-data --daemon app:app
 echo "Gunicorn started"
+
 
