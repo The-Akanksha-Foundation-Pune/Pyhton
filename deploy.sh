@@ -21,14 +21,14 @@ sudo apt-get update
 echo "Installing Python and pip"
 sudo apt-get install -y python3 python3-pip
 
-echo "Installing application dependencies"
-sudo apt-get install python3-venv
-sudo python3 -m venv venv
-source venv/bin/activate
-echo “Acrivated ENV”
-sudo chown -R ubuntu:ubuntu /var/www/my-app
-sudo chown -R ubuntu:ubuntu /home/ubuntu/venv
-pip3 install -r requirements.txt
+#echo "Installing application dependencies"
+#sudo apt-get install python3-venv
+#sudo python3 -m venv venv
+#source venv/bin/activate
+#echo “Acrivated ENV”
+#sudo chown -R ubuntu:ubuntu /var/www/my-app
+#sudo chown -R ubuntu:ubuntu /home/ubuntu/venv
+#pip3 install -r requirements.txt
 
 # Install and configure Nginx if it's not installed
 if ! command -v nginx > /dev/null; then
