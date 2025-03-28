@@ -16,6 +16,7 @@ else
     echo "Warning: env file not found, skipping..."
 fi
 
+# Update apt-get and install dependencies
 sudo apt-get update
 echo "Installing Python and pip"
 sudo apt-get install -y python3 python3-pip
@@ -23,22 +24,23 @@ sudo apt-get install -y python3 python3-pip
 echo "Installing application dependencies"
 sudo pip install -r /var/www/my-app/requirements.txt
 
-# Install and configure Nginx
+# Install and configure Nginx if it's not installed
 if ! command -v nginx > /dev/null; then
     echo "Installing Nginx"
     sudo apt-get install -y nginx
 fi
 
+# Create Nginx configuration if it doesn't exist
 if [ ! -f /etc/nginx/sites-available/myapp ]; then
     sudo rm -f /etc/nginx/sites-enabled/default
     sudo bash -c 'cat > /etc/nginx/sites-available/myapp <<EOF
 server {
     listen 80;
-    server_name _;
+    server_name 52.6.210.203;  # Change to your actual server IP
 
     location / {
         include proxy_params;
-        proxy_pass http://unix:/var/www/my-app/myapp.sock;
+        proxy_pass http://127.0.0.1:5000;  # Forward traffic to Gunicorn on port 5000
     }
 }
 EOF'
@@ -49,9 +51,13 @@ else
 fi
 
 # Restart Gunicorn
+echo "Stopping any existing Gunicorn instances"
 sudo pkill gunicorn
+
+# Remove any old socket file
 sudo rm -f /var/www/my-app/myapp.sock
 
 echo "Starting Gunicorn"
-sudo gunicorn --workers 3 --bind unix:/var/www/my-app/myapp.sock server:app --user www-data --group www-data --daemon
+sudo gunicorn --workers 3 --bind 0.0.0.0:5000 --user www-data --group www-data --daemon app:app
 echo "Gunicorn started"
+
